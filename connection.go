@@ -22,6 +22,7 @@ func (u *UserConnection) Send(m Message) {
 	u.ws.WriteMessage(websocket.TextMessage, []byte(m.Message))
 }
 
+
 // Listen method listens ws-connection and tries to get user UID
 func (u *UserConnection) Listen() {
 	defer func() {
