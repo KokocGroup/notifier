@@ -17,11 +17,15 @@ Send notification through RabbitMQ, for example:
 pip install universalbus
 ```
 and then
-```
+```python
 from universalbus import EventSender
 sender = EventSender('guest', 'guest', 'localhost', '/', exchange='notifications')
 sender.push_text('user.15', 'notification example', ttl=15*60)  # instead 15, enter your ID
 ```
+
+## Build
+
+You can build release by running ```make build``` inside project's directory.
 
 
 ## Offline notifications
