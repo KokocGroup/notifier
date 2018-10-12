@@ -17,6 +17,10 @@ type initMessage struct {
 	Checksum  string `json:"checksum"`
 }
 
+type errorMessage struct {
+	Error string `json:"error"`
+}
+
 // Validates checksum
 func (m *initMessage) validate() error {
 	h := md5.New()
@@ -66,17 +70,20 @@ func (u *UserConnection) Listen() {
 		var msg = initMessage{}
 		err = json.Unmarshal(rawMessage, &msg)
 		if err != nil {
-			err = u.send([]byte(err.Error()))
+			errorMsgB, _ := json.Marshal(&errorMessage{Error: err.Error()})
+			err = u.send(errorMsgB)
 			continue
 		}
 		// If checksum is one day old - ignore attempt
 		if msg.Timestamp < time.Now().Unix()-24*60*60 {
-			err = u.send([]byte("timestamp in initial sequence is too old"))
+			errorMsgB, _ := json.Marshal(&errorMessage{Error: "timestamp in initial sequence is too old or not presented"})
+			err = u.send(errorMsgB)
 			continue
 		}
 		err = msg.validate()
 		if err != nil {
-			err = u.send([]byte(err.Error()))
+			errorMsgB, _ := json.Marshal(&errorMessage{Error: err.Error()})
+			err = u.send(errorMsgB)
 			continue
 		}
 		u.UID = msg.UID
